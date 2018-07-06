@@ -155,4 +155,27 @@ class LinkedCiLiView(ctx : Context) : View(ctx) {
             curr.startUpdating(startcb)
         }
     }
+
+    data class Renderer(var view : LinkedCiLiView) {
+
+        private val animator : LICIAnimator = LICIAnimator(view)
+
+        private val linkedLICI : LinkedLICI = LinkedLICI(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(Color.parseColor("#212121"))
+            linkedLICI.draw(canvas, paint)
+            animator.animate {
+                linkedLICI.update {
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            linkedLICI.startUpdating {
+                animator.stop()
+            }
+        }
+    }
 }
