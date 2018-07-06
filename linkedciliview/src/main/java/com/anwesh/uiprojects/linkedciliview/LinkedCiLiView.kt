@@ -6,6 +6,7 @@ package com.anwesh.uiprojects.linkedciliview
 
 import android.app.Activity
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.view.View
 import android.view.MotionEvent
 import android.graphics.Canvas
@@ -84,9 +85,9 @@ class LinkedCiLiView(ctx : Context) : View(ctx) {
 
     data class LICINode(var i : Int, val state : LICIState = LICIState()) {
 
-        lateinit var next : LICINode
+        var next : LICINode? = null
 
-        lateinit var prev : LICINode
+        var prev : LICINode? = null
 
         init {
             addNeighbor()
@@ -100,18 +101,20 @@ class LinkedCiLiView(ctx : Context) : View(ctx) {
         }
 
         fun draw(canvas : Canvas, paint : Paint) {
+            prev?.draw(canvas, paint)
             val w : Float = canvas.width.toFloat()
             val h : Float = canvas.height.toFloat()
             val gap : Float = (w / LI_CI_NODES)
             val r : Float = gap / 2
             val sc1 : Float = Math.min(state.scale, 0.5f)
-            val sc2 : Float = Math.max(state.scale - 0.5f, 0f)
+            val sc2 : Float = Math.max(state.scale - 0.5f, 0f) * 2
             paint.strokeWidth = Math.min(w, h) / 60
             paint.strokeCap = Paint.Cap.ROUND
             paint.color = Color.parseColor("#673AB7")
+            paint.style = Paint.Style.STROKE
             canvas.save()
             canvas.translate(i * gap + r, h/2)
-            canvas.drawArc(RectF(-r, -r, r, r), 180f, 180f + 180f * sc1, false, paint)
+            canvas.drawArc(RectF(-r, -r, r, r), 180f, 180f * sc1, false, paint)
             canvas.drawLine(0f, -r, r * sc2, -r + r * sc2, paint)
             canvas.restore()
         }
@@ -125,7 +128,7 @@ class LinkedCiLiView(ctx : Context) : View(ctx) {
         }
 
         fun getNext(dir : Int, cb : () -> Unit) : LICINode {
-            var curr : LICINode = prev
+            var curr : LICINode? = prev
             if (dir == 1) {
                 curr = next
             }
@@ -179,7 +182,7 @@ class LinkedCiLiView(ctx : Context) : View(ctx) {
 
         fun handleTap() {
             linkedLICI.startUpdating {
-                animator.stop()
+                animator.start()
             }
         }
     }
@@ -188,8 +191,9 @@ class LinkedCiLiView(ctx : Context) : View(ctx) {
 
         fun create(activity : Activity)  : LinkedCiLiView {
             val view : LinkedCiLiView = LinkedCiLiView(activity)
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             activity.setContentView(view)
-            return view 
+            return view
         }
     }
 }
