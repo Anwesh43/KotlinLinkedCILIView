@@ -4,6 +4,7 @@ package com.anwesh.uiprojects.linkedciliview
  * Created by anweshmishra on 06/07/18.
  */
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.MotionEvent
@@ -180,6 +181,15 @@ class LinkedCiLiView(ctx : Context) : View(ctx) {
             linkedLICI.startUpdating {
                 animator.stop()
             }
+        }
+    }
+
+    companion object {
+
+        fun create(activity : Activity)  : LinkedCiLiView {
+            val view : LinkedCiLiView = LinkedCiLiView(activity)
+            activity.setContentView(view)
+            return view 
         }
     }
 }
